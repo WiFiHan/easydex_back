@@ -3,5 +3,5 @@ from .views import DexUserView
 app_name = 'dexmanager'
 urlpatterns = [
     # FBV url path
-    path("dexmanager/", DexUserView, name='get'),
+    path("dexmanager/", DexUserView.as_view(), name='get'),
 ]
