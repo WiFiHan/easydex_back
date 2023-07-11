@@ -5,9 +5,10 @@
 
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
+from scraper.items import IndexItem
 
 
-class ScraperPipeline:
+class IndexPipeline:
     def process_item(self, item, spider):
+        item.save()
         return item
