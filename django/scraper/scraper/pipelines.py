@@ -10,5 +10,6 @@ from scraper.items import IndexItem
 
 class IndexPipeline:
     def process_item(self, item, spider):
-        item.save()
-        return item
+        # item.save()
+        # return item
+        pass

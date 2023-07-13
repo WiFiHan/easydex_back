@@ -1,8 +1,8 @@
 import scrapy
 from scraper.items import IndexItem
 
-class CrawlerSpider(scrapy.Spider):
-    name = "crawler"
+class indexInfoSpider(scrapy.Spider):
+    name = "indexinfo"
     allowed_domains = ["investing.com"]
     start_urls = [
         "https://www.investing.com/indices/us-30", 
@@ -12,11 +12,34 @@ class CrawlerSpider(scrapy.Spider):
         "https://www.investing.com/indices/smallcap-2000",
         "https://www.investing.com/indices/kospi",
         "https://www.investing.com/indices/kosdaq",
+        "https://www.investing.com/crypto/bitcoin/btc-usd",
+        "https://www.investing.com/crypto/ethereum/eth-usd",
+        "https://www.investing.com/currencies/usd-krw",
+        "https://www.investing.com/currencies/jpy-krw",
     ]
 
     def parse(self, response):
-        name = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
-        closing = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[3]/div/div[1]/div[1]/text()').get()
-        print('title :', name)
-        print('closing :', closing)
-        yield IndexItem(name=name, closing=closing)
+        if ("crypto" in response.url) or ("currencies" in response.url):
+            name = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
+            closing = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span/text()').get()
+        else:
+            name = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
+            closing = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[3]/div/div[1]/div[1]/text()').get()
+        
+        yield {
+            'name': name,
+            'closing': closing,
+        }
+
+        yield response.follow(response.url + "-historical-data", callback=self.parse_historical_data)
+
+    def parse_historical_data(self, response):
+        if ("crypto" in response.url) or ("currencies" in response.url):
+            data = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody//tr')
+        else:
+            data = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[4]/div/div/div[3]/div/table/tbody//tr')
+        for row in data:
+            yield {
+                'date': row.xpath('td[1]/time//text()').get(),
+                'closing': row.xpath('td[2]//text()').get(),
+            }
