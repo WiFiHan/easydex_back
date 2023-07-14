@@ -3,7 +3,6 @@ from scraper.items import IndexItem
 
 class indexInfoSpider(scrapy.Spider):
     name = "indexinfo"
-    allowed_domains = ["investing.com"]
     start_urls = [
         "https://www.investing.com/indices/us-30", 
         "https://www.investing.com/indices/us-spx-500",
@@ -25,13 +24,12 @@ class indexInfoSpider(scrapy.Spider):
         else:
             name = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[3]/div/div[1]/div[1]/text()').get()
-        
-        yield {
-            'name': name,
-            'closing': closing,
-        }
-
-        yield response.follow(response.url + "-historical-data", callback=self.parse_historical_data)
+        # yield {
+        #     'name': name,
+        #     'closing': closing,
+        # }
+        yield IndexItem(name=name, closing=closing)
+        # yield response.follow(response.url + "-historical-data", callback=self.parse_historical_data)
 
     def parse_historical_data(self, response):
         if ("crypto" in response.url) or ("currencies" in response.url):

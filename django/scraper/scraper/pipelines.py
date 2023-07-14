@@ -5,11 +5,21 @@
 
 
 # useful for handling different item types with a single interface
-from scraper.items import IndexItem
-
+from index.models import Index
 
 class IndexPipeline:
     def process_item(self, item, spider):
+        index = Index(name=item['name'], closing=item['closing'])
+        # print(index.name)
+        # print(index.closing)
+        print(type(index))
+        try:
+            index.save()
+        except Exception as e:
+            
+            print("Error saving index:", e)    
+        # return scrapy_item
+        # print(type(item))
+        # print(type(scrapy_item))
         # item.save()
-        # return item
-        pass
+        return item

@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'account',
     'dexmanager',
     'index',
+    'scraper',
 ]
 
 MIDDLEWARE = [

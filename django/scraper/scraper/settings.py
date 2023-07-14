@@ -8,12 +8,13 @@
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import sys
 import os
-
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".."))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'easydex.settings'
-
 import django
+
+sys.path.append(os.path.dirname(os.path.abspath('.')))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'easydex.settings'
 django.setup()
+
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 BOT_NAME = "scraper"
 
@@ -34,8 +35,8 @@ CONCURRENT_REQUESTS = 1
 # See also autothrottle settings and docs
 DOWNLOAD_DELAY = 0.25
 # The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
-#CONCURRENT_REQUESTS_PER_IP = 16
+# CONCURRENT_REQUESTS_PER_DOMAIN = 16
+# CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
@@ -69,9 +70,9 @@ DOWNLOAD_DELAY = 0.25
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#   "scraper.pipelines.IndexPipeline": 300,
-# }
+ITEM_PIPELINES = {
+  "scraper.pipelines.IndexPipeline": 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

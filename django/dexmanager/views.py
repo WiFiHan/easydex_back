@@ -12,4 +12,3 @@ class DexUserView(APIView):
         dexList = Dex.objects.all()
         dexSerializer = DexSerializer(dexList, many=True)
         return Response(dexSerializer.data, status=status.HTTP_200_OK)
-    
