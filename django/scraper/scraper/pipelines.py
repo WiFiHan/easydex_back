@@ -5,21 +5,13 @@
 
 
 # useful for handling different item types with a single interface
-from index.models import Index
+from dexmanager.models import SrcDex
 
 class IndexPipeline:
     def process_item(self, item, spider):
-        index = Index(name=item['name'], closing=item['closing'])
-        # print(index.name)
-        # print(index.closing)
-        print(type(index))
+        index = SrcDex(title=item['title'], closing=item['closing'])
         try:
             index.save()
         except Exception as e:
-            
-            print("Error saving index:", e)    
-        # return scrapy_item
-        # print(type(item))
-        # print(type(scrapy_item))
-        # item.save()
+            print("Error saving index:", e)
         return item

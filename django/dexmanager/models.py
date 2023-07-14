@@ -6,8 +6,9 @@ from django.utils import timezone
 class SrcDex(models.Model):
     #Refer Post class of our Seminar
     title = models.CharField(max_length=256)
-    values = models.JSONField()
-    watching_users =  models.ManyToManyField(User, blank=True, related_name='watching_dex', through='UserDex')
+    closing = models.CharField(max_length=256, default="1000")
+    values = models.JSONField(null=True, blank=True)
+    # watching_users =  models.ManyToManyField(User, blank=True, related_name='watching_dex', through='UserDex')
 
 
 class UserDex(models.Model):

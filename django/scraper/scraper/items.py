@@ -4,7 +4,7 @@
 # https://docs.scrapy.org/en/latest/topics/items.html
 
 from scrapy_djangoitem import DjangoItem
-from index.models import Index
+from dexmanager.models import SrcDex
 
-class IndexItem(DjangoItem):
-    django_model = Index
+class SrcDexItem(DjangoItem):
+    django_model = SrcDex

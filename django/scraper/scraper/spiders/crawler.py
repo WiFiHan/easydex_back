@@ -1,5 +1,5 @@
 import scrapy
-from scraper.items import IndexItem
+from scraper.items import SrcDexItem
 
 class indexInfoSpider(scrapy.Spider):
     name = "indexinfo"
@@ -19,16 +19,16 @@ class indexInfoSpider(scrapy.Spider):
 
     def parse(self, response):
         if ("crypto" in response.url) or ("currencies" in response.url):
-            name = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
+            title = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span/text()').get()
         else:
-            name = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
+            title = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[3]/div/div[1]/div[1]/text()').get()
         # yield {
         #     'name': name,
         #     'closing': closing,
         # }
-        yield IndexItem(name=name, closing=closing)
+        yield SrcDexItem(title=title, closing=closing)
         # yield response.follow(response.url + "-historical-data", callback=self.parse_historical_data)
 
     def parse_historical_data(self, response):
