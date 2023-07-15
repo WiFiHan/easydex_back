@@ -1,9 +1,8 @@
 import scrapy
-from scraper.items import IndexItem
+from scraper.items import SrcDexItem
 
-class indexInfoSpider(scrapy.Spider):
-    name = "indexinfo"
-    allowed_domains = ["investing.com"]
+class indicesInfoSpider(scrapy.Spider):
+    name = "indicesinfo"
     start_urls = [
         "https://www.investing.com/indices/us-30", 
         "https://www.investing.com/indices/us-spx-500",
@@ -20,26 +19,31 @@ class indexInfoSpider(scrapy.Spider):
 
     def parse(self, response):
         if ("crypto" in response.url) or ("currencies" in response.url):
-            name = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
+            title = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span/text()').get()
         else:
-            name = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
+            title = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[3]/div/div[1]/div[1]/text()').get()
-        
-        yield {
-            'name': name,
-            'closing': closing,
-        }
 
-        yield response.follow(response.url + "-historical-data", callback=self.parse_historical_data)
+        yield SrcDexItem(title=title, closing=closing)
 
-    def parse_historical_data(self, response):
+class IndexHistorySpider(scrapy.Spider):
+    name = "indexhistory"
+    start_urls = [
+        "https://www.investing.com/indices/us-30-historical-data",
+        "https://www.investing.com/currencies/usd-krw-historical-data",
+    ]
+
+    def parse(self, response):
         if ("crypto" in response.url) or ("currencies" in response.url):
+            title = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
             data = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[4]/div/div[1]/div/div[3]/div/table/tbody//tr')
         else:
+            title = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
             data = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[4]/div/div/div[3]/div/table/tbody//tr')
+        values = dict()
         for row in data:
-            yield {
-                'date': row.xpath('td[1]/time//text()').get(),
-                'closing': row.xpath('td[2]//text()').get(),
-            }
+            date = row.xpath('td[1]/time//text()').get()
+            price = row.xpath('td[2]//text()').get()
+            values[date] = price
+        yield SrcDexItem(title=title, values=values)

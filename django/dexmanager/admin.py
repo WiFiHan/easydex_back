@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import SrcDex, UserDex
 
-# Register your models here.
+admin.site.register(SrcDex)
+admin.site.register(UserDex)
