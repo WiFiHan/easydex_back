@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'account',
     'dexmanager',
-    'index',
     'scraper',
     'corsheaders',
     'rest_framework',

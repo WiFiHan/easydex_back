@@ -5,21 +5,31 @@
 
 
 # useful for handling different item types with a single interface
-from index.models import Index
+from dexmanager.models import SrcDex
+from django.core.exceptions import ObjectDoesNotExist
 
 class IndexPipeline:
     def process_item(self, item, spider):
-        index = Index(name=item['name'], closing=item['closing'])
-        # print(index.name)
-        # print(index.closing)
-        print(type(index))
-        try:
-            index.save()
-        except Exception as e:
-            
-            print("Error saving index:", e)    
-        # return scrapy_item
-        # print(type(item))
-        # print(type(scrapy_item))
-        # item.save()
+        caller_spider = spider.name
+        if caller_spider == 'indicesinfo':
+            try: 
+                index = SrcDex.objects.get(title=item['title'])  # get existing one
+            except ObjectDoesNotExist:
+                index = SrcDex(title=item['title'])              # create new one
+            try:
+                index.closing = item['closing']
+                index.save()
+            except Exception as e:
+                print("Error saving index info:", e)
+        else:
+            try:
+                index = SrcDex.objects.get(title=item['title'])
+            except Exception as e:
+                print("Error getting index info:", e)
+            try:
+                print("Saving index values:", item['values'])
+                index.values = item['values']
+                index.save()
+            except Exception as e:
+                print("Error saving index values:", e)
         return item
