@@ -7,14 +7,14 @@ class indicesInfoSpider(scrapy.Spider):
         "https://www.investing.com/indices/us-30", 
         "https://www.investing.com/indices/us-spx-500",
         "https://www.investing.com/indices/nasdaq-composite",
-        "https://www.investing.com/indices/volatility-s-p-500",
-        "https://www.investing.com/indices/smallcap-2000",
-        "https://www.investing.com/indices/kospi",
-        "https://www.investing.com/indices/kosdaq",
-        "https://www.investing.com/crypto/bitcoin/btc-usd",
-        "https://www.investing.com/crypto/ethereum/eth-usd",
-        "https://www.investing.com/currencies/usd-krw",
-        "https://www.investing.com/currencies/jpy-krw",
+        # "https://www.investing.com/indices/volatility-s-p-500",
+        # "https://www.investing.com/indices/smallcap-2000",
+        # "https://www.investing.com/indices/kospi",
+        # "https://www.investing.com/indices/kosdaq",
+        # "https://www.investing.com/crypto/bitcoin/btc-usd",
+        # "https://www.investing.com/crypto/ethereum/eth-usd",
+        # "https://www.investing.com/currencies/usd-krw",
+        # "https://www.investing.com/currencies/jpy-krw",
     ]
 
     def parse(self, response):
