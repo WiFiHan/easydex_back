@@ -1,7 +1,7 @@
 import scrapy
-from scraper.items import SrcDexItem
+from ..items import SrcDexItem
 
-class indicesInfoSpider(scrapy.Spider):
+class IndicesInfoSpider(scrapy.Spider):
     name = "indicesinfo"
     start_urls = [
         "https://www.investing.com/indices/us-30", 
@@ -25,15 +25,13 @@ class indicesInfoSpider(scrapy.Spider):
             title = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[3]/div/div[1]/div[1]/text()').get()
 
-        yield SrcDexItem(title=title, closing=closing)
+        yield SrcDexItem(title=title, closing=closing)      # add url=response.url when you want to update url
 
 class IndexHistorySpider(scrapy.Spider):
     name = "indexhistory"
-    start_urls = [
-        # "https://www.investing.com/indices/us-30-historical-data",
-        # "https://www.investing.com/currencies/usd-krw-historical-data",
-        "https://www.investing.com/currencies/jpy-krw-historical-data",
-    ]
+    
+    def start_requests(self):
+        yield scrapy.Request(f"{self.URL}-historical-data", self.parse)
 
     def parse(self, response):
         if ("crypto" in response.url) or ("currencies" in response.url):
