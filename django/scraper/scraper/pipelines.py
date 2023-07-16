@@ -7,6 +7,7 @@
 # useful for handling different item types with a single interface
 from dexmanager.models import SrcDex
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 class IndexPipeline:
     def process_item(self, item, spider):
@@ -18,6 +19,8 @@ class IndexPipeline:
                 index = SrcDex(title=item['title'])              # create new one
             try:
                 index.closing = item['closing']
+                index.updated_at = timezone.now()
+                # index.url = item['url']                        # make it enable when you want to update url
                 index.save()
             except Exception as e:
                 print("Error saving index info:", e)
@@ -27,8 +30,8 @@ class IndexPipeline:
             except Exception as e:
                 print("Error getting index info:", e)
             try:
-                print("Saving index values:", item['values'])
                 index.values = item['values']
+                index.updated_at = timezone.now()
                 index.save()
             except Exception as e:
                 print("Error saving index values:", e)
