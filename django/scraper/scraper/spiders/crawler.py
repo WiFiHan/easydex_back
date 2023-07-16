@@ -30,8 +30,9 @@ class indicesInfoSpider(scrapy.Spider):
 class IndexHistorySpider(scrapy.Spider):
     name = "indexhistory"
     start_urls = [
-        "https://www.investing.com/indices/us-30-historical-data",
-        "https://www.investing.com/currencies/usd-krw-historical-data",
+        # "https://www.investing.com/indices/us-30-historical-data",
+        # "https://www.investing.com/currencies/usd-krw-historical-data",
+        "https://www.investing.com/currencies/jpy-krw-historical-data",
     ]
 
     def parse(self, response):

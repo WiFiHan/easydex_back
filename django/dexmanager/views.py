@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import DexSerializer
-
+import subprocess
 from .models import SrcDex, UserDex
 
 # Create your views here.
@@ -15,16 +15,12 @@ class DexListView(APIView):
         return Response(srcDexSerializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-    #This is the View FOR DEVELOPERS to add new dex
-        title = request.data.get("title")
-        values = request.data.get("values")
-
-        if not title or not values:
-            return Response({"detail": "[title, values] fields missing."}, status=status.HTTP_400_BAD_REQUEST)
-	    
-        srcDex = SrcDex.objects.create(title=title, values=values)
-        serializer = DexSerializer(srcDex)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #This is the View FOR DEVELOPERS to update every Dex(title, closing) from the web
+        try:
+            subprocess.call("cd scraper && scrapy crawl indicesinfo --nolog", shell=True)
+        except:
+            Response({"detail": "Error scraping data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({"detail": "Database updated."}, status=status.HTTP_201_CREATED)
 
 class DexDetailView(APIView):
     def get(self, request, dex_id):
@@ -36,6 +32,15 @@ class DexDetailView(APIView):
         serializer = DexSerializer(srcDex)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def post(self, request):
+    #This is the View FOR DEVELOPERS to update a selected Dex(values) from the web
+        url = request.data.get('url')
+        try:
+            # 해당 url에 대한 크롤링 실행
+            pass
+        except:
+            pass
+        return
 
 class UserDexView(APIView):
     def post(self, request, dex_id):
