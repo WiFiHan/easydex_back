@@ -15,6 +15,7 @@ class SrcDex(models.Model):
     tags = models.JSONField(blank=True, null=True)
     category = models.CharField(max_length=256, blank=True)
     isInvest = models.BooleanField(default=True)
+    url = models.URLField(blank=True)
 
     def get_list(self):
         if self.tags:
