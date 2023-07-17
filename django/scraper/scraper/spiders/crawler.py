@@ -45,8 +45,9 @@ class IndicesInfoSpider(scrapy.Spider):
         else: # commodities, indices, bonds
             title = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[3]/div/div[1]/div[1]/text()').get()
-
-        yield SrcDexItem(title=title, closing=closing, url=response.url)      # add url=response.url when you want to update url
+        # url = response.url
+        # category = url.split("/")[3]
+        yield SrcDexItem(title=title, closing=closing)      # add url=response.url, category=category when you want to update it
 
 class IndexHistorySpider(scrapy.Spider):
     name = "indexhistory"
