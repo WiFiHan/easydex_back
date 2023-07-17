@@ -20,6 +20,19 @@ class IndicesInfoSpider(scrapy.Spider):
         "https://www.investing.com/etfs/powershares-qqqq",
         "https://www.investing.com/etfs/ishares-russell-2000-index-etf",
         "https://www.investing.com/etfs/ishares-ftse-xinhua-china-25",
+        "https://www.investing.com/commodities/gold",
+        "https://www.investing.com/commodities/brent-oil",
+        "https://www.investing.com/commodities/crude-oil",
+        "https://www.investing.com/commodities/copper",
+        "https://www.investing.com/commodities/us-corn",
+        "https://www.investing.com/commodities/natural-gas",
+        "https://www.investing.com/rates-bonds/u.s.-2-year-bond-yield",
+        "https://www.investing.com/rates-bonds/u.s.-10-year-bond-yield",
+        "https://www.investing.com/etfs/samsung-kodex-kospi-200-securities",
+        "https://www.investing.com/etfs/samsung-kodex-200-total-return",
+        "https://www.investing.com/etfs/samsung-kodex-leverage",
+        "https://www.investing.com/etfs/miraeasset-tiger-kospi-200",
+        "https://www.investing.com/etfs/305540",
     ]
 
     def parse(self, response):
@@ -29,7 +42,7 @@ class IndicesInfoSpider(scrapy.Spider):
         elif ("etfs" in response.url):
             title = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[3]/div[1]/div[1]/div[1]/text()').get()
-        else:
+        else: # commodities, indices, bonds
             title = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[3]/div/div[1]/div[1]/text()').get()
 
