@@ -41,7 +41,8 @@ class DexDetailView(APIView):
 
     def post(self, request, dex_id):
     #This is the View FOR DEVELOPERS to update a selected Dex(values) from the web
-        url = SrcDex.objects.get(id=dex_id).url
+        srcDex = SrcDex.objects.get(id=dex_id)
+        url = srcDex.url
         try:
             # 해당 url에 대한 크롤링 실행
             subprocess.call(f"cd scraper && scrapy crawl indexhistory -a URL={url} --nolog", shell=True)
@@ -50,6 +51,11 @@ class DexDetailView(APIView):
         except Exception as e:
             print(e)
             return Response({"detail": "Error scraping data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # gptAnswer = gptAPI(srcDex.title)
+        # srcDex.description = gptAnswer.data.choices[index].message.content
+        # serializer = DexSerializer(srcDex)
+        # serializer.save()
+        # return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({"detail": "Database updated."}, status=status.HTTP_200_OK)
 
 class UserDexView(APIView):
