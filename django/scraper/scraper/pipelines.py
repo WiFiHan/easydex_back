@@ -21,6 +21,7 @@ class IndexPipeline:
                 index.closing = item['closing']
                 index.updated_at = timezone.now()
                 # index.url = item['url']                        # make it enable when you want to update url
+                # index.category = item['category']              # make it enable when you want to update category
                 index.save()
             except Exception as e:
                 print("Error saving index info:", e)
