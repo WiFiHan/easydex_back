@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 from .serializers import DexSerializer
 import subprocess
 from .models import SrcDex, UserDex
+import pandas as pd
+from datetime import datetime, timedelta
 import scrapy
 from scrapy.crawler import CrawlerRunner, CrawlerProcess
 from scraper.scraper.spiders.crawler import IndicesInfoSpider, IndexHistorySpider
@@ -57,6 +59,21 @@ class DexDetailView(APIView):
         # serializer.save()
         # return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({"detail": "Database updated."}, status=status.HTTP_200_OK)
+    
+    def put(self, request, dex_id):
+        date_range = [datetime.today().date() - timedelta(days=i) for i in range(31)]
+        formatted_indices = [datetime.strptime(date.strftime("%Y-%m-%d"), "%Y-%m-%d") for date in date_range]
+        df = pd.DataFrame(index=formatted_indices)
+
+        src_dict = SrcDex.objects.get(id=dex_id).values
+        src_df = pd.DataFrame.from_dict(src_dict, orient='index', columns=['src'])
+        src_df.index = pd.to_datetime(src_df.index, format='%m/%d/%Y')
+        df = df.merge(src_df, left_index=True, right_index=True, how='left')
+
+        
+
+        print(df)
+        return Response(status=status.HTTP_200_OK)
 
 class UserDexView(APIView):
     def post(self, request, dex_id):
