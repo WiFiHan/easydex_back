@@ -1,5 +1,6 @@
 import scrapy
 from ..items import SrcDexItem
+from .utils import generate_description
 
 class IndicesInfoSpider(scrapy.Spider):
     name = "indicesinfo"
@@ -45,9 +46,9 @@ class IndicesInfoSpider(scrapy.Spider):
         else: # commodities, indices, bonds
             title = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[3]/div/div[1]/div[1]/text()').get()
-        # url = response.url
-        # category = url.split("/")[3]
-        yield SrcDexItem(title=title, closing=closing)      # add url=response.url, category=category when you want to update it
+        url = response.url
+        category = url.split("/")[3]
+        yield SrcDexItem(title=title, closing=closing, url=url, category=category)      # add url=response.url, category=category when you want to update it
 
 class IndexHistorySpider(scrapy.Spider):
     name = "indexhistory"
@@ -66,9 +67,10 @@ class IndexHistorySpider(scrapy.Spider):
             title = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
             data = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[4]/div/div/div[3]/div/table/tbody//tr')
         
+        description = generate_description(title)
         values = dict()
         for row in data:
             date = row.xpath('td[1]/time//text()').get()
             price = row.xpath('td[2]//text()').get()
             values[date] = price
-        yield SrcDexItem(title=title, values=values)
+        yield SrcDexItem(title=title, values=values, description=description)
