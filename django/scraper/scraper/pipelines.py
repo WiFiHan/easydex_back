@@ -13,18 +13,18 @@ class IndexPipeline:
     def process_item(self, item, spider):
         caller_spider = spider.name
         if caller_spider == 'indicesinfo':
-            try: 
-                index = SrcDex.objects.get(title=item['title'])  # get existing one
-            except ObjectDoesNotExist:
-                index = SrcDex(title=item['title'])              # create new one
             try:
+                index, created = SrcDex.objects.get_or_create(title=item['title'])
+                if created:
+                    index.title = item['title']
+                    index.url = item['url']
+                    index.category = item['category']
                 index.closing = item['closing']
                 index.updated_at = timezone.now()
-                index.url = item['url']                        # make it enable when you want to update url
-                index.category = item['category']              # make it enable when you want to update category
                 index.save()
             except Exception as e:
                 print("Error saving index info:", e)
+                
         else:
             try:
                 index = SrcDex.objects.get(title=item['title'])

@@ -26,7 +26,7 @@ class DexListView(APIView):
             # process.crawl(IndicesInfoSpider)
             # process.start()
         except:
-            Response({"detail": "Error scraping data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            Response({"detail": "Error while crawling."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response({"detail": "Database updated."}, status=status.HTTP_201_CREATED)
 
 class DexDetailView(APIView):
