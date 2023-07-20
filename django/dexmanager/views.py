@@ -87,6 +87,12 @@ class DexDetailView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class UserDexView(APIView):
+    def get(self, request):
+        if SrcDex.objects.exists():
+            return Response({"is_empty": False}, status=status.HTTP_200_OK)
+        else:
+            return Response({"is_empty": True}, status=status.HTTP_200_OK)
+
     def post(self, request, dex_id):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials not provided"}, status=status.HTTP_401_UNAUTHORIZED)
