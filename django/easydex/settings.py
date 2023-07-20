@@ -11,8 +11,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-import os, environ, sys
-from datetime import datetime, timedelta, date
+import os, sys
+import environ
+from datetime import timedelta
 
 env = environ.Env(
     DEBUG=(bool, True)
@@ -21,11 +22,6 @@ env = environ.Env(
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-import os, environ
-
-env = environ.Env(
-    DEBUG=(bool, True)
-)
 environ.Env.read_env(
     env_file=os.path.join(BASE_DIR, '.env')
 )
