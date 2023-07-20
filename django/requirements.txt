@@ -11,8 +11,10 @@ constantly==15.1.0
 cryptography==41.0.2
 cssselect==1.2.0
 Django==4.2.3
+django-cors-headers==4.2.0
+django-environ==0.10.0
 djangorestframework==3.14.0
-environ==1.0
+djangorestframework-simplejwt==5.2.2
 filelock==3.12.2
 frozenlist==1.4.0
 hyperlink==21.0.0
@@ -31,12 +33,12 @@ pyasn1==0.5.0
 pyasn1-modules==0.3.0
 pycparser==2.21
 PyDispatcher==2.0.7
+PyJWT==2.8.0
 pyOpenSSL==23.2.0
 pytz==2023.3
 queuelib==1.6.2
 requests==2.31.0
 requests-file==1.5.1
-rest-framework-simplejwt==0.0.2
 Scrapy==2.9.0
 scrapy-djangoitem==1.1.1
 service-identity==23.1.0
