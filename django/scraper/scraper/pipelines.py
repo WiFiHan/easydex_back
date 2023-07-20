@@ -8,9 +8,11 @@
 from dexmanager.models import SrcDex
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+import logging as log
 
 class IndexPipeline:
     def process_item(self, item, spider):
+        # print("pipeline entered.")
         caller_spider = spider.name
         if caller_spider == 'indicesinfo':
             try:
@@ -39,3 +41,10 @@ class IndexPipeline:
                 print("Error saving index values:", e)
 
         return item
+    
+    def open_spider(self, spider):
+        log.info("Opening Spider: {}".format(spider.name))
+        
+        
+    def close_spider(self, spider):
+        log.info("Closing Spider: {}".format(spider.name))

@@ -37,6 +37,7 @@ class IndicesInfoSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
+        # print("parse entered.")
         if ("crypto" in response.url) or ("currencies" in response.url):
             title = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span/text()').get()

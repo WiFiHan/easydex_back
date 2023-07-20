@@ -7,11 +7,11 @@ import subprocess
 from .models import SrcDex, UserDex
 import pandas as pd
 from datetime import datetime, timedelta
-import json
 import scrapy
 from scrapy.crawler import CrawlerRunner, CrawlerProcess
 from scraper.scraper.spiders.crawler import IndicesInfoSpider, IndexHistorySpider
-from scrapy.utils.project import get_project_settings
+from scrapy.settings import Settings
+from scraper.scraper import settings as my_settings
 
 # Create your views here.
 class DexListView(APIView):
@@ -25,12 +25,9 @@ class DexListView(APIView):
     #This is the View FOR DEVELOPERS to update every Dex(title, closing) from the web
         try:
             subprocess.call("cd scraper && scrapy crawl indicesinfo --nolog", shell=True)
-            # process = CrawlerProcess()
-            # process.crawl(IndicesInfoSpider)
-            # process.start()
+            return Response({"detail": "Database updated."}, status=status.HTTP_201_CREATED)
         except:
-            Response({"detail": "Error while crawling."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response({"detail": "Database updated."}, status=status.HTTP_201_CREATED)
+            return Response({"detail": "Error while crawling."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class DexDetailView(APIView):
     def get(self, request, dex_id):
