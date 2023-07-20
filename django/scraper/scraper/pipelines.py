@@ -6,7 +6,6 @@
 
 # useful for handling different item types with a single interface
 from dexmanager.models import SrcDex
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 import logging as log
 

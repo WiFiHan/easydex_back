@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,6 +6,7 @@ import subprocess
 from .models import SrcDex, UserDex
 import pandas as pd
 from datetime import datetime, timedelta
+from .dftools import get_tags_from_corr, merge_compare_df, merge_src_df, get_date_information
 
 # Create your views here.
 class DexListView(APIView):
@@ -49,41 +49,29 @@ class DexDetailView(APIView):
         return Response({"detail": "Database updated."}, status=status.HTTP_200_OK)
     
     def put(self, request, dex_id):
-        date_range = [datetime.today().date() - timedelta(days=i) for i in range(31)]
-        formatted_indices = [datetime.strptime(date.strftime("%Y-%m-%d"), "%Y-%m-%d") for date in date_range]
-        df = pd.DataFrame(index=formatted_indices)
+        # get date-dataframe of 31 days
+        df = get_date_information(datetime.today())
 
-        srcDex = SrcDex.objects.get(id=dex_id)
-        src_dict = srcDex.values
-        src_df = pd.DataFrame.from_dict(src_dict, orient='index', columns=['src'])
-        src_df.index = pd.to_datetime(src_df.index, format='%m/%d/%Y')
-        df = df.merge(src_df, left_index=True, right_index=True, how='left')
+        # get SrcDex object
+        src_obj = SrcDex.objects.get(id=dex_id)
 
+        # add src data to df
+        src_dict = src_obj.values
+        df = merge_src_df(src_dict, df)
+
+        # add compare data to df
         compare_list = request.data['indices']
         for index in compare_list:
             compare_dict = SrcDex.objects.get(id=index).values
-            compare_df = pd.DataFrame.from_dict(compare_dict, orient='index', columns=[f'{index}'])
-            compare_df.index = pd.to_datetime(compare_df.index, format='%m/%d/%Y')
-            df = df.merge(compare_df, left_index=True, right_index=True, how='left')
-            
-        df = df.apply(lambda x: pd.to_numeric(x.astype(str).str.replace(',',''), errors='coerce'))
-        coefs = df.corrwith(df['src'], numeric_only=True)
-        filtered_coefs = coefs[abs(coefs) > 0.7]
-        if filtered_coefs.empty:
-            filtered_coefs = coefs[abs(coefs) > 0.5]
-        sorted_coefs = filtered_coefs.abs().sort_values(ascending=False)
-        ordered_indices = sorted_coefs.index.tolist()
-        ordered_indices.pop(0)
-        if len(ordered_indices) > 5:
-            ordered_indices = ordered_indices[:5]
+            df = merge_compare_df(index, compare_dict, df)
+        
+        # get correlation between src compare data
+        json_tags = get_tags_from_corr(df)
 
-        json_tags = {}
-        for idx in ordered_indices:
-            json_tags[idx] = round(coefs[idx], 3)
-
-        srcDex.tags = json_tags
-        srcDex.save()
-        serializer = DexSerializer(srcDex)
+        # save data
+        src_obj.tags = json_tags
+        src_obj.save()
+        serializer = DexSerializer(src_obj)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class UserDexView(APIView):
