@@ -7,11 +7,6 @@ import subprocess
 from .models import SrcDex, UserDex
 import pandas as pd
 from datetime import datetime, timedelta
-import scrapy
-from scrapy.crawler import CrawlerRunner, CrawlerProcess
-from scraper.scraper.spiders.crawler import IndicesInfoSpider, IndexHistorySpider
-from scrapy.settings import Settings
-from scraper.scraper import settings as my_settings
 
 # Create your views here.
 class DexListView(APIView):
