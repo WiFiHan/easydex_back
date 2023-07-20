@@ -4,9 +4,7 @@ from django.contrib import auth
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import UserSerializer,UserProfileSerializer, UserIdUsernameSerializer
 from .models import UserProfile
