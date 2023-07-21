@@ -37,10 +37,12 @@ class IndicesInfoSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
-        # print("parse entered.")
         if ("crypto" in response.url) or ("currencies" in response.url):
             title = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[2]/div[1]/span/text()').get()
+            if not title:
+                title = response.xpath('//*[@id="__next"]/div[2]/div/div/div/main/div/div[1]/div[1]/h1/text()').get()
+                closing = response.xpath('//*[@id="__next"]/div[2]/div/div/div/main/div/div[1]/div[2]/div[1]/span/text()').get()
         elif ("etfs" in response.url):
             title = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[1]/div[1]/h1/text()').get()
             closing = response.xpath('//*[@id="__next"]/div[2]/div[2]/div/div[1]/div/div[1]/div[3]/div[1]/div[1]/div[1]/text()').get()
@@ -50,6 +52,9 @@ class IndicesInfoSpider(scrapy.Spider):
 
         url = response.url
         category = url.split("/")[3]
+
+        if not title:
+            print("title field is NULL. URL is {}".format(url))
 
         yield SrcDexItem(title=title, closing=closing, url=url, category=category)
 

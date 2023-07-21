@@ -4,8 +4,7 @@ from rest_framework.views import APIView
 from .serializers import DexSerializer
 import subprocess
 from .models import SrcDex, UserDex
-import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 from .dftools import get_tags_from_corr, merge_compare_df, merge_src_df, get_date_information
 
 # Create your views here.
@@ -20,6 +19,7 @@ class DexListView(APIView):
     #This is the View FOR DEVELOPERS to update every Dex(title, closing) from the web
         try:
             subprocess.call("cd scraper && scrapy crawl indicesinfo --nolog", shell=True)
+            print("Crawling done at {}".format(datetime.now()))
             return Response({"detail": "Database updated."}, status=status.HTTP_201_CREATED)
         except:
             return Response({"detail": "Error while crawling."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -11,7 +11,6 @@ import logging as log
 
 class IndexPipeline:
     def process_item(self, item, spider):
-        # print("pipeline entered.")
         caller_spider = spider.name
         if caller_spider == 'indicesinfo':
             try:
