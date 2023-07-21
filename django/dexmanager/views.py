@@ -41,8 +41,6 @@ class DexDetailView(APIView):
         try:
             # 해당 url에 대한 크롤링 실행
             subprocess.call(f"cd scraper && scrapy crawl indexhistory -a URL={url} --nolog", shell=True)
-            # process = CrawlerRunner(get_project_settings())
-            # process.crawl(IndexHistorySpider, URL=url)
         except Exception as e:
             print(e)
             return Response({"detail": "Error scraping data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
