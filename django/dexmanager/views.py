@@ -19,7 +19,7 @@ class DexListView(APIView):
     #This is the View FOR DEVELOPERS to update every Dex(title, closing) from the web
         try:
             subprocess.call("cd scraper && scrapy crawl indicesinfo --nolog", shell=True)
-            print("Crawling done at {}".format(datetime.now()))
+            print("Crawling all done at {}".format(datetime.now()))
             return Response({"detail": "Database updated."}, status=status.HTTP_201_CREATED)
         except:
             return Response({"detail": "Error while crawling."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -41,6 +41,7 @@ class DexDetailView(APIView):
         try:
             # 해당 url에 대한 크롤링 실행
             subprocess.call(f"cd scraper && scrapy crawl indexhistory -a URL={url} --nolog", shell=True)
+            print("Crawling index {} done at {}".format(dex_id, datetime.now()))
         except Exception as e:
             print(e)
             return Response({"detail": "Error scraping data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
