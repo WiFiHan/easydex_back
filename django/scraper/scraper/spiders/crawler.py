@@ -75,7 +75,7 @@ class IndexHistorySpider(scrapy.Spider):
             title = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
             data = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[4]/div/div/div[3]/div/table/tbody//tr')
         
-        description = generate_description(title)
+        # description = generate_description(title)
         values = dict()
 
         for row in data:
@@ -83,4 +83,4 @@ class IndexHistorySpider(scrapy.Spider):
             price = row.xpath('td[2]//text()').get()
             values[date] = price
 
-        yield SrcDexItem(title=title, values=values, description=description)
+        yield SrcDexItem(title=title, values=values, description=None)

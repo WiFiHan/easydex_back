@@ -29,6 +29,7 @@ class IndexPipeline:
             try:
                 index = SrcDex.objects.get(title=item['title'])
             except Exception as e:
+                print("title:", item['title'])
                 print("Error getting index info:", e)
             try:
                 index.values = item['values']

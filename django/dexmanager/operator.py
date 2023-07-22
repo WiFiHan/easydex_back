@@ -6,11 +6,11 @@ import signal
 def start():
     scheduler=BackgroundScheduler(job_defaults={'max_instances': 2})
 
-    @scheduler.scheduled_job('cron', minute='*/1', name = 'refresh_dexes', misfire_grace_time=60)
+    @scheduler.scheduled_job('cron', hour='1', name = 'refresh_dexes', misfire_grace_time=60)
     def refresh_dexes():
         DexListView.post(DexListView, None)
 
-    @scheduler.scheduled_job('cron', minute='*/3', name = 'refresh_dex_value', misfire_grace_time=60)
+    @scheduler.scheduled_job('cron', hour='23', name = 'refresh_dex_value', misfire_grace_time=60)
     def refresh_dex_value():
         id_array = SrcDex.objects.values_list('id', flat=True)
         for idx in id_array:
