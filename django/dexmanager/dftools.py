@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 import pandas as pd
 from pandas import DataFrame
-from .models import SrcDex
 
 def get_date_information(today):
   date_range = [today.date() - timedelta(days=i) for i in range(31)]

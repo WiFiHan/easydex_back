@@ -11,7 +11,7 @@ class SrcDex(models.Model):
     values = models.JSONField(null=True, blank=True)
     watching_users = models.ManyToManyField(User, blank=True, related_name='watching_dex', through='UserDex')
     updated_at = models.DateTimeField(default=timezone.now)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, null=True)
     tags = models.TextField(blank=True, null=True, default={'1': 123, '2': 342, '3': 152})
     category = models.CharField(max_length=256, blank=True)
     isInvest = models.BooleanField(default=True)

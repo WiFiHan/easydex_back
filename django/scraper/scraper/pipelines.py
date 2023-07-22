@@ -11,7 +11,6 @@ import logging as log
 
 class IndexPipeline:
     def process_item(self, item, spider):
-        # print("pipeline entered.")
         caller_spider = spider.name
         if caller_spider == 'indicesinfo':
             try:
@@ -30,6 +29,7 @@ class IndexPipeline:
             try:
                 index = SrcDex.objects.get(title=item['title'])
             except Exception as e:
+                print("title:", item['title'])
                 print("Error getting index info:", e)
             try:
                 index.values = item['values']
