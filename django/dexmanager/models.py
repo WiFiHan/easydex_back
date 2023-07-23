@@ -16,7 +16,7 @@ class SrcDex(models.Model):
     category = models.CharField(max_length=256, blank=True)
     isInvest = models.BooleanField(default=True)
     url = models.URLField(blank=True)
-
+    search_keyword = models.JSONField(null=True, blank=True)
     
 
 

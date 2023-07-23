@@ -38,3 +38,12 @@ def generate_description(dex):
     """
     response = get_completion(prompt)
     return response
+
+def generate_keywords(dex):
+    prompt = f"""
+    You are a financial AI assistant that provides easy explanations of {dex} indicators and recent news for beginners.
+
+    Please provide a list of abbreviations or acronyms that Korean users would search for when they want to know about {dex} indicator.
+    """
+    response = get_completion(prompt)
+    return response

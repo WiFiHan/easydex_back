@@ -1,6 +1,6 @@
 import scrapy
 from ..items import SrcDexItem
-from .utils import generate_description
+from .utils import generate_description, generate_keywords
 
 class IndicesInfoSpider(scrapy.Spider):
     name = "indicesinfo"
@@ -52,6 +52,7 @@ class IndicesInfoSpider(scrapy.Spider):
 
         url = response.url
         category = url.split("/")[3]
+        keywords = generate_keywords(title)
 
         if not title:
             print("title field is NULL. URL is {}".format(url))
@@ -75,7 +76,7 @@ class IndexHistorySpider(scrapy.Spider):
             title = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
             data = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[4]/div/div/div[3]/div/table/tbody//tr')
         
-        # description = generate_description(title)
+        description = generate_description(title)
         values = dict()
 
         for row in data:
@@ -83,4 +84,4 @@ class IndexHistorySpider(scrapy.Spider):
             price = row.xpath('td[2]//text()').get()
             values[date] = price
 
-        yield SrcDexItem(title=title, values=values, description=None)
+        yield SrcDexItem(title=title, values=values, description=description, url=response.url)
