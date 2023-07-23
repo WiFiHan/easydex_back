@@ -18,8 +18,6 @@ class SrcDex(models.Model):
     url = models.URLField(blank=True)
     search_keyword = models.JSONField(null=True, blank=True)
     
-
-
     def get_list(self):
         if self.tags:
             return json.loads(self.tags)
@@ -27,6 +25,11 @@ class SrcDex(models.Model):
 
     def set_list(self, value):
         self.tags = json.dumps(value)
+
+class HankyungTitle(models.Model):
+    title = models.CharField(max_length=256)
+    updated_at = models.DateTimeField(default=timezone.now)
+    page = models.IntegerField(default=1)
 
 class UserDex(models.Model):
     #Refer Like class of our Seminar
