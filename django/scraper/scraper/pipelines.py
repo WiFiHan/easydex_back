@@ -21,6 +21,7 @@ class IndexPipeline:
                     index.category = item['category']
                 index.closing = item['closing']
                 index.updated_at = timezone.now()
+                # index.search_keyword = item['keywords']
                 index.save()
             except Exception as e:
                 print("Error saving index info:", e)

@@ -6,6 +6,7 @@ import subprocess
 from .models import SrcDex, UserDex
 from datetime import datetime
 from .dftools import get_tags_from_corr, merge_compare_df, merge_src_df, get_date_information
+import requests
 
 # Create your views here.
 class DexListView(APIView):
@@ -101,3 +102,14 @@ class UserDexView(APIView):
 
         serializer = DexSerializer(instance=srcDex)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ECOSopenAPIView(APIView):
+    def get(self, request):
+        url = "http://ecos.bok.or.kr/api/KeyStatisticList/1AJBYOG5GZJC0OMYBOSO/json/kr/1/10"
+        try:
+            response = requests.get(url)
+            print(response.json())
+            return Response(response.json(), status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"detail": "Error scraping data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
