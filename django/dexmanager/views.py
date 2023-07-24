@@ -103,13 +103,24 @@ class UserDexView(APIView):
         serializer = DexSerializer(instance=srcDex)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class ECOSopenAPIView(APIView):
+class EcoDexView(APIView):
+    # ECOS API
     def get(self, request):
         url = "http://ecos.bok.or.kr/api/KeyStatisticList/1AJBYOG5GZJC0OMYBOSO/json/kr/1/10"
         try:
             response = requests.get(url)
             print(response.json())
             return Response(response.json(), status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"detail": "Error scraping data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    # 한국경제 크롤링
+    def post(self, request):
+        try:
+            subprocess.call(f"cd scraper && scrapy crawl hankyung --nolog", shell=True)
+            print("Crawling Hankyung done at {}".format(datetime.now()))
+            return Response({"detail": "Database updated."}, status=status.HTTP_201_CREATED)
         except Exception as e:
             print(e)
             return Response({"detail": "Error scraping data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
