@@ -37,13 +37,16 @@ def generate_description(dex):
     Please provide a simple and concise explanation (around 80 characters) of what {dex} indicator is in Korean.
     """
     response = get_completion(prompt)
+    print(response)
     return response
 
 def generate_keywords(dex):
     prompt = f"""
-    You are a financial AI assistant that provides easy explanations of {dex} indicators and recent news for beginners.
+    You are a concise translater that provides easy Korean word of complicated name - {dex} indicator.
 
-    Please provide a list of abbreviations or acronyms that Korean users would search for when they want to know about {dex} indicator.
+    Please provide 5 abbreviations or acronyms that users would search for when they want to know about {dex} indicator.
+    Do not add extra explanation. Just provide the keywords.
+    If there is no abbreviation or acronym, just provide its short name or full name.
     """
     response = get_completion(prompt)
     return response

@@ -21,7 +21,7 @@ class IndexPipeline:
                     index.category = item['category']
                 index.closing = item['closing']
                 index.updated_at = timezone.now()
-                index.search_keyword = item['keywords']      # json형태로 수정해서 저장
+                index.search_keyword = item['search_keyword']
                 index.save()
             except Exception as e:
                 print("Error saving index info:", e)
