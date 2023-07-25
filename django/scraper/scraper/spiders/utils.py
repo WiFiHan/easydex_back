@@ -42,11 +42,10 @@ def generate_description(dex):
 
 def generate_keywords(dex):
     prompt = f"""
-    You are a concise translater that provides easy Korean word of complicated name - {dex} indicator.
+    You are a helper bot that enables searching for investing indiciators with complicated name.
 
-    Please provide 5 abbreviations or acronyms that users would search for when they want to know about {dex} indicator.
-    Do not add extra explanation. Just provide the keywords.
-    If there is no abbreviation or acronym, just provide its short name or full name.
+    Please provide 5 abbreviations, acronyms or friendly names that people would search for when they want to know about {dex} indicator.
+    Do not include any explanation.
     """
     response = get_completion(prompt)
     return response
