@@ -8,6 +8,7 @@
 from dexmanager.models import SrcDex, HankyungTitle
 from django.utils import timezone
 import logging as log
+from .func import remove_brackets_and_append
 
 class IndexPipeline:
     def process_item(self, item, spider):
@@ -21,7 +22,8 @@ class IndexPipeline:
                     index.category = item['category']
                 index.closing = item['closing']
                 index.updated_at = timezone.now()
-                # index.search_keyword = item['keywords']
+                index.search_keyword = remove_brackets_and_append(item['search_keyword'])
+                print("inside model: ", index.search_keyword)
                 index.save()
             except Exception as e:
                 print("Error saving index info:", e)

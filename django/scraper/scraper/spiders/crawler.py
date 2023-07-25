@@ -1,6 +1,7 @@
 import scrapy
 from ..items import SrcDexItem, HankyungTitleItem
 from .utils import generate_description, generate_keywords
+import json
 
 class IndicesInfoSpider(scrapy.Spider):
     name = "indicesinfo"
@@ -52,12 +53,14 @@ class IndicesInfoSpider(scrapy.Spider):
 
         url = response.url
         category = url.split("/")[3]
-        keywords = generate_keywords(title)
+        keywords_str = generate_keywords(title)
+        keywords_list = keywords_str.splitlines()
+        keywords_list = [element.split('. ', 1)[1] for element in keywords_list]
 
         if not title:
             print("title field is NULL. URL is {}".format(url))
 
-        yield SrcDexItem(title=title, closing=closing, url=url, category=category)  #keywords=keywords
+        yield SrcDexItem(title=title, closing=closing, url=url, category=category, search_keyword=keywords_list)
 
 class IndexHistorySpider(scrapy.Spider):
     name = "indexhistory"

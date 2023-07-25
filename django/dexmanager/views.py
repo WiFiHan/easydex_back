@@ -3,10 +3,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import DexSerializer
 import subprocess
-from .models import SrcDex, UserDex
+from .models import SrcDex, UserDex, HankyungTitle
 from datetime import datetime
 from .dftools import get_tags_from_corr, merge_compare_df, merge_src_df, get_date_information
-import requests
+from .ecos import get_statistic
+from .codes import statistic_codes
+from .utils import generate_summary
 
 # Create your views here.
 class DexListView(APIView):
@@ -105,16 +107,26 @@ class UserDexView(APIView):
 
 class EcoDexView(APIView):
     # ECOS API
-    def get(self, request):
-        url = "http://ecos.bok.or.kr/api/KeyStatisticList/1AJBYOG5GZJC0OMYBOSO/json/kr/1/10"
+    def post(self, request):
         try:
-            response = requests.get(url)
-            print(response.json())
-            return Response(response.json(), status=status.HTTP_200_OK)
+            for code in statistic_codes:
+                get_statistic(code[-1], code[0], code[1])
+            return Response(status=status.HTTP_201_CREATED)
         except Exception as e:
             print(e)
             return Response({"detail": "Error scraping data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+
+class HankyungView(APIView):
+    def get(self, request):
+        try:
+            news_titles = HankyungTitle.objects.values_list('title', flat=True)[:90]
+            news_titles = "\n".join(news_titles)
+            summaries = generate_summary(news_titles)
+            return Response({"summaries": summaries}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"detail": "Error summurizing news."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     # 한국경제 크롤링
     def post(self, request):
         try:
