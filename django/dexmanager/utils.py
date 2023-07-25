@@ -7,7 +7,7 @@ env = environ.Env(
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(
     DEBUG=(bool, True)
 )
@@ -27,25 +27,23 @@ def get_completion(prompt, model="gpt-3.5-turbo", temperature=0):
         model=model,
         messages=messages,
         temperature=temperature,
+        max_tokens=512,
     )
     return response.choices[0].message["content"]
 
-def generate_description(dex):
+def generate_summary(title_list):
     prompt = f"""
-    You are a financial AI assistant that provides easy explanations of {dex} indicators and recent news for beginners.
+    You are a financial AI assistant that provides recent topic of investing news for Korean.
 
-    Please provide a simple and concise explanation (around 80 characters) of what {dex} indicator is in Korean.
+    Here each line is the latest economic news titles:\n{title_list}\n
+    Please pick 5 important keywords affecting the stock market which appear most frequently and provide it with explanation obeying following features.
+    - Each keywords should be less than 3 tokens.
+    - Exclude propositional particles and political keywords.
+    - The explanation for each keywords could be just one sentence in korean and remove english.
+    - 
     """
     response = get_completion(prompt)
     return response
 
-def generate_keywords(dex):
-    prompt = f"""
-    You are a helper bot that enables searching for investing indiciators with complicated name.
-
-    Please provide 5 abbreviations or acronyms that people would search for when they want to know about {dex} indicator.
-    If possible, please provide friendly names in Korean.
-    Do not include any explanation.
-    """
-    response = get_completion(prompt)
-    return response
+if __name__ == "__main__":
+    pass

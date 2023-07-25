@@ -3,11 +3,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import DexSerializer
 import subprocess
-from .models import SrcDex, UserDex
+from .models import SrcDex, UserDex, HankyungTitle
 from datetime import datetime
 from .dftools import get_tags_from_corr, merge_compare_df, merge_src_df, get_date_information
 from .ecos import get_statistic
 from .codes import statistic_codes
+from .utils import generate_summary
 
 # Create your views here.
 class DexListView(APIView):
@@ -117,6 +118,15 @@ class EcoDexView(APIView):
         
 
 class HankyungView(APIView):
+    def get(self, request):
+        try:
+            news_titles = HankyungTitle.objects.values_list('title', flat=True)[:90]
+            news_titles = "\n".join(news_titles)
+            summaries = generate_summary(news_titles)
+            return Response({"summaries": summaries}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"detail": "Error summurizing news."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     # 한국경제 크롤링
     def post(self, request):
         try:
