@@ -23,7 +23,6 @@ class IndexPipeline:
                 index.closing = item['closing']
                 index.updated_at = timezone.now()
                 index.search_keyword = remove_brackets_and_append(item['search_keyword'])
-                print("inside model: ", index.search_keyword)
                 index.save()
             except Exception as e:
                 print("Error saving index info:", e)

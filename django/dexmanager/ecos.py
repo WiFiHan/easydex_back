@@ -36,7 +36,8 @@ def get_statistic(index_period, table_code, index_code):
             values = dict()
             for row in row_list:
                 values[row.get('TIME')] = row.get('DATA_VALUE')
-        except:
+        except Exception as e:
+            print(f"Error parsing data: {e}", table_code, index_code)
             return "Failed to parse data"
         try:
             Dex, created = SrcDex.objects.get_or_create(title=title)
@@ -48,7 +49,8 @@ def get_statistic(index_period, table_code, index_code):
             Dex.save()
 
             return f"{title} created" if created else f"{title} updated"
-        except:
+        except Exception as e:
+            print(f"Error saving data: {e}")
             return "Failed to save data"
     else:
         print(f"Request failed with status code {response.status_code} while processing code {index_code}")
