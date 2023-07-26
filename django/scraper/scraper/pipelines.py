@@ -9,6 +9,7 @@ from dexmanager.models import SrcDex, HankyungTitle
 from django.utils import timezone
 import logging as log
 from .func import remove_brackets_and_append
+from .func import generate_keywords, generate_description
 
 class IndexPipeline:
     def process_item(self, item, spider):
@@ -16,14 +17,19 @@ class IndexPipeline:
         if caller_spider == 'indicesinfo':
             try:
                 index, created = SrcDex.objects.get_or_create(title=item['title'])
-                if created:
+                if not index.title:
                     index.title = item['title']
+                if not index.url:
                     index.url = item['url']
+                if not index.category:
                     index.category = item['category']
                 index.closing = item['closing']
                 index.updated_at = timezone.now()
-                index.search_keyword = remove_brackets_and_append(item['search_keyword'])
-                print("inside model: ", index.search_keyword)
+                if not index.search_keyword:
+                    keywords_str = generate_keywords(item['title'])
+                    keywords_list = keywords_str.splitlines()
+                    keywords_list = [element.split('. ', 1)[1] for element in keywords_list]
+                    index.search_keyword = remove_brackets_and_append(keywords_list)
                 index.save()
             except Exception as e:
                 print("Error saving index info:", e)
@@ -36,7 +42,9 @@ class IndexPipeline:
                 print("Error getting index info:", e)
             try:
                 index.values = item['values']
-                index.description = item['description']
+                if not index.description:
+                    description = generate_description(item['title'])
+                    index.description = description
                 index.updated_at = timezone.now()
                 index.save()
             except Exception as e:
