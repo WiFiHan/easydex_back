@@ -5,13 +5,13 @@
 
 
 # useful for handling different item types with a single interface
-from dexmanager.models import SrcDex
+from dexmanager.models import SrcDex, HankyungTitle
 from django.utils import timezone
 import logging as log
+from .func import remove_brackets_and_append
 
 class IndexPipeline:
     def process_item(self, item, spider):
-        # print("pipeline entered.")
         caller_spider = spider.name
         if caller_spider == 'indicesinfo':
             try:
@@ -22,14 +22,17 @@ class IndexPipeline:
                     index.category = item['category']
                 index.closing = item['closing']
                 index.updated_at = timezone.now()
+                index.search_keyword = remove_brackets_and_append(item['search_keyword'])
+                print("inside model: ", index.search_keyword)
                 index.save()
             except Exception as e:
                 print("Error saving index info:", e)
                 
-        else:
+        elif caller_spider == 'indexhistory':
             try:
                 index = SrcDex.objects.get(title=item['title'])
             except Exception as e:
+                print("title:", item['title'])
                 print("Error getting index info:", e)
             try:
                 index.values = item['values']
@@ -38,6 +41,16 @@ class IndexPipeline:
                 index.save()
             except Exception as e:
                 print("Error saving index values:", e)
+        else:
+            try:
+                article, created = HankyungTitle.objects.get_or_create(title=item['title'])
+                if created:
+                    article.title = item['title']
+                article.page = item['page']
+                article.updated_at = timezone.now()
+                article.save()
+            except Exception as e:
+                print("Error saving article info:", e)
 
         return item
     
