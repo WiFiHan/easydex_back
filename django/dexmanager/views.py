@@ -72,9 +72,12 @@ class DexDetailView(APIView):
 
         # save data
         src_obj.tags = json_tags
-        src_obj.save()
-        serializer = DexSerializer(src_obj)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            src_obj.save()
+            serializer = DexSerializer(src_obj)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return Response({"detail": "Error saving data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserDexView(APIView):
     def get(self, request):
