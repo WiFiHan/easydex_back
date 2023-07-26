@@ -8,3 +8,4 @@ urlpatterns = [
     path("economy/", EcoDexView.as_view()),
     path("hankyung/", HankyungView.as_view()),
     path("<int:dex_id>/userdex/", UserDexView.as_view()),
+]
