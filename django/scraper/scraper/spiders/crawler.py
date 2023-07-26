@@ -95,22 +95,23 @@ class HankyungSpider(scrapy.Spider):
         "https://www.hankyung.com/economy?page=1",
         "https://www.hankyung.com/economy?page=2",
         "https://www.hankyung.com/economy?page=3",
-        "https://www.hankyung.com/economy?page=4",
-        "https://www.hankyung.com/economy?page=5",
-        "https://www.hankyung.com/economy?page=6",
-        "https://www.hankyung.com/economy?page=7",
-        "https://www.hankyung.com/economy?page=8",
-        "https://www.hankyung.com/economy?page=9",
-        "https://www.hankyung.com/economy?page=10",
     ]
 
     def parse(self, response):
         # Extract article titles from the current page
-        print("Crawling page {}".format(response.url))
-        page = response.url.split('=')[1]
         for article in response.css("ul.news-list li"):
-            title = article.css("h3.news-tit a::text").get()
-            if title:
-                yield HankyungTitleItem(title=title, page=page)
+
+            # Follow the link of the article and crawl text from the following page
+            article_link = article.css("h3.news-tit a::attr(href)").get()
+            if article_link:
+                yield response.follow(article_link, self.parse_article)
+
+    def parse_article(self, response):
+        # Extract text from the article page
+        item = HankyungTitleItem()
+        item['title'] = response.css("h1.headline::text").get().strip()
+        content_list = response.css("div.article-body ::text").getall()
+        item['content'] = "".join(content_list).replace("\n", "").replace("\t", "").replace("  ", " ").strip()
+        yield item
 
 

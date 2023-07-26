@@ -24,8 +24,8 @@ class SrcDex(models.Model):
 
 class HankyungTitle(models.Model):
     title = models.CharField(max_length=256)
+    content = models.TextField(blank=True)
     updated_at = models.DateTimeField(default=timezone.now)
-    page = models.IntegerField(default=1)
 
 class UserDex(models.Model):
     #Refer Like class of our Seminar
