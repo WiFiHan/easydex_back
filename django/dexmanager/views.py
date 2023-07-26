@@ -72,9 +72,12 @@ class DexDetailView(APIView):
 
         # save data
         src_obj.tags = json_tags
-        src_obj.save()
-        serializer = DexSerializer(src_obj)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            src_obj.save()
+            serializer = DexSerializer(src_obj)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return Response({"detail": "Error saving data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserDexView(APIView):
     def get(self, request):
@@ -107,6 +110,8 @@ class UserDexView(APIView):
 
 class EcoDexView(APIView):
     # ECOS API
+    def get(self, request):
+        pass
     def post(self, request):
         try:
             for code in statistic_codes:
@@ -118,7 +123,7 @@ class EcoDexView(APIView):
         
 
 class HankyungView(APIView):
-    def get(self, request):
+    def get(self, request):     # need to be modified
         try:
             news_titles = HankyungTitle.objects.values_list('title', flat=True)[:90]
             news_titles = "\n".join(news_titles)

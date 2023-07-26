@@ -46,7 +46,7 @@ class IndexPipeline:
                 article, created = HankyungTitle.objects.get_or_create(title=item['title'])
                 if created:
                     article.title = item['title']
-                article.page = item['page']
+                article.content = item['content']
                 article.updated_at = timezone.now()
                 article.save()
             except Exception as e:
