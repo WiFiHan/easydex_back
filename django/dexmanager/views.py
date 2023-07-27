@@ -124,7 +124,7 @@ class EcoDexView(APIView):
         
 
 class HankyungView(APIView):
-    def get(self, request):     # need to be modified
+    def get(self, request):
         try:
             with open('dexmanager/newsdata/summaries.txt', 'r', encoding='utf-8') as f:
                 summaries = f.read()
