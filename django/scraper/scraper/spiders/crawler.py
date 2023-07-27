@@ -1,7 +1,5 @@
 import scrapy
 from ..items import SrcDexItem, HankyungTitleItem
-from .utils import generate_description, generate_keywords
-import json
 
 class IndicesInfoSpider(scrapy.Spider):
     name = "indicesinfo"
@@ -53,14 +51,11 @@ class IndicesInfoSpider(scrapy.Spider):
 
         url = response.url
         category = url.split("/")[3]
-        keywords_str = generate_keywords(title)
-        keywords_list = keywords_str.splitlines()
-        keywords_list = [element.split('. ', 1)[1] for element in keywords_list]
-
+        
         if not title:
             print("title field is NULL. URL is {}".format(url))
 
-        yield SrcDexItem(title=title, closing=closing, url=url, category=category, search_keyword=keywords_list)
+        yield SrcDexItem(title=title, closing=closing, url=url, category=category)
 
 class IndexHistorySpider(scrapy.Spider):
     name = "indexhistory"
@@ -79,7 +74,6 @@ class IndexHistorySpider(scrapy.Spider):
             title = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[1]/div[1]/h1/text()').get()
             data = response.xpath('//*[@id="__next"]/div[2]/div/div/div[2]/main/div/div[4]/div/div/div[3]/div/table/tbody//tr')
         
-        description = generate_description(title)
         values = dict()
 
         for row in data:
@@ -87,7 +81,7 @@ class IndexHistorySpider(scrapy.Spider):
             price = row.xpath('td[2]//text()').get()
             values[date] = price
 
-        yield SrcDexItem(title=title, values=values, description=description, url=response.url)
+        yield SrcDexItem(title=title, values=values, url=response.url)
 
 class HankyungSpider(scrapy.Spider):
     name = "hankyung"
@@ -95,22 +89,23 @@ class HankyungSpider(scrapy.Spider):
         "https://www.hankyung.com/economy?page=1",
         "https://www.hankyung.com/economy?page=2",
         "https://www.hankyung.com/economy?page=3",
-        "https://www.hankyung.com/economy?page=4",
-        "https://www.hankyung.com/economy?page=5",
-        "https://www.hankyung.com/economy?page=6",
-        "https://www.hankyung.com/economy?page=7",
-        "https://www.hankyung.com/economy?page=8",
-        "https://www.hankyung.com/economy?page=9",
-        "https://www.hankyung.com/economy?page=10",
     ]
 
     def parse(self, response):
         # Extract article titles from the current page
-        print("Crawling page {}".format(response.url))
-        page = response.url.split('=')[1]
         for article in response.css("ul.news-list li"):
-            title = article.css("h3.news-tit a::text").get()
-            if title:
-                yield HankyungTitleItem(title=title, page=page)
+
+            # Follow the link of the article and crawl text from the following page
+            article_link = article.css("h3.news-tit a::attr(href)").get()
+            if article_link:
+                yield response.follow(article_link, self.parse_article)
+
+    def parse_article(self, response):
+        # Extract text from the article page
+        item = HankyungTitleItem()
+        item['title'] = response.css("h1.headline::text").get().strip()
+        content_list = response.css("div.article-body ::text").getall()
+        item['content'] = "".join(content_list).replace("\n", "").replace("\t", "").replace("  ", " ").strip()
+        yield item
 
 
