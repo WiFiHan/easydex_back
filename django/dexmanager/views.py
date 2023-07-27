@@ -8,7 +8,7 @@ from datetime import datetime
 from .dftools import get_tags_from_corr, merge_compare_df, merge_src_df, get_date_information
 from .ecos import get_statistic
 from .codes import statistic_codes
-from .utils import generate_summary
+from .utils import execute
 
 # Create your views here.
 class DexListView(APIView):
@@ -126,19 +126,30 @@ class EcoDexView(APIView):
 class HankyungView(APIView):
     def get(self, request):     # need to be modified
         try:
-            news_titles = HankyungTitle.objects.values_list('title', flat=True)[:90]
-            news_titles = "\n".join(news_titles)
-            summaries = generate_summary(news_titles)
+            with open('dexmanager/newsdata/summaries.txt', 'r', encoding='utf-8') as f:
+                summaries = f.read()
             return Response({"summaries": summaries}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response({"detail": "Error summurizing news."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    # 한국경제 크롤링
+    # 한국경제 크롤링 & 요약
     def post(self, request):
         try:
+            HankyungTitle.objects.all().delete()
             subprocess.call(f"cd scraper && scrapy crawl hankyung --nolog", shell=True)
             print("Crawling Hankyung done at {}".format(datetime.now()))
-            return Response({"detail": "Database updated."}, status=status.HTTP_201_CREATED)
+            content_list = HankyungTitle.objects.values_list('content', flat=True)
+            content_str = '\n'.join(list(content_list))
+
+            with open('dexmanager/newsdata/contents.txt', 'w', encoding='utf-8') as f:
+                f.write(content_str)
+
+            summaries = execute()
+
+            with open('dexmanager/newsdata/summaries.txt', 'w', encoding='utf-8') as f:
+                f.write(summaries)
+
+            return Response({"summaries": summaries}, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response({"detail": "Error scraping data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"detail": "Error summurizing news."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
