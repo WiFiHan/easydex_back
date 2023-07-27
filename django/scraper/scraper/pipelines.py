@@ -9,7 +9,7 @@ from dexmanager.models import SrcDex, HankyungTitle
 from django.utils import timezone
 import logging as log
 from .func import remove_brackets_and_append
-from .func import generate_keywords, generate_description
+from .func import generate_keywords, generate_description, reduce_title
 
 class IndexPipeline:
     def process_item(self, item, spider):
@@ -30,6 +30,9 @@ class IndexPipeline:
                     keywords_list = keywords_str.splitlines()
                     keywords_list = [element.split('. ', 1)[1] for element in keywords_list]
                     index.search_keyword = remove_brackets_and_append(keywords_list)
+                if not index.reduced_title:
+                    reduced_title = reduce_title(item['title'])
+                    index.reduced_title = reduced_title
                 index.save()
             except Exception as e:
                 print("Error saving index info:", e)
