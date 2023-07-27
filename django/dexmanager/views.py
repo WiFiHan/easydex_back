@@ -115,7 +115,8 @@ class EcoDexView(APIView):
     def post(self, request):
         try:
             for code in statistic_codes:
-                get_statistic(code[-1], code[0], code[1])
+                result = get_statistic(code[-1], code[0], code[1])
+                print(result)
             return Response(status=status.HTTP_201_CREATED)
         except Exception as e:
             print(e)

@@ -54,3 +54,4 @@ def get_statistic(index_period, table_code, index_code):
             return "Failed to save data"
     else:
         print(f"Request failed with status code {response.status_code} while processing code {index_code}")
+        return "Request failed"
