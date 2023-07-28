@@ -21,11 +21,46 @@ class DexListView(APIView):
     def post(self, request):
     #This is the View FOR DEVELOPERS to update every Dex(title, closing) from the web
         try:
-            subprocess.call("cd scraper && scrapy crawl indicesinfo --nolog", shell=True)
+            subprocess.call(f"cd scraper && scrapy crawl indicesinfo --nolog", shell=True)
             print("Crawling all done at {}".format(datetime.now()))
             return Response({"detail": "Database updated."}, status=status.HTTP_201_CREATED)
         except:
             return Response({"detail": "Error while crawling."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    def put(self, request):
+        # get SrcDex object
+        dex_id_list = SrcDex.objects.values_list('id', flat=True)
+        try:
+            for dex_id in dex_id_list:
+                src_obj = SrcDex.objects.get(id=dex_id)
+                isInvest = src_obj.isInvest
+                period = src_obj.period
+
+                # get date-dataframe
+                df = get_date_information(datetime.today(), isInvest, period)
+
+                # add src data to df
+                src_dict = src_obj.values
+                df = merge_src_df(src_dict, df, isInvest)
+
+                # add compare data to df
+                if isInvest:
+                    compare_list = SrcDex.objects.filter(isInvest=isInvest).exclude(id=dex_id).values_list('id', flat=True)
+                else:
+                    compare_list = SrcDex.objects.filter(isInvest=isInvest, period=period).exclude(id=dex_id).values_list('id', flat=True)
+                for index in compare_list:
+                    compare_dict = SrcDex.objects.get(id=index).values
+                    df = merge_compare_df(index, compare_dict, df, isInvest)
+
+                # get correlation between src compare data
+                json_tags = get_tags_from_corr(df)
+
+                # save data
+                src_obj.tags = json_tags
+                src_obj.save()
+            return Response({"detail": "tags updated."}, status=status.HTTP_200_OK)
+        except:
+            return Response({"detail": "Error saving data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class DexDetailView(APIView):
     def get(self, request, dex_id):
@@ -37,52 +72,15 @@ class DexDetailView(APIView):
         serializer = DexSerializer(srcDex)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request, dex_id):
+    def post(self, request):
     #This is the View FOR DEVELOPERS to update a selected Dex(values) from the web
-        srcDex = SrcDex.objects.get(id=dex_id)
-        url = srcDex.url
         try:
-            # 해당 url에 대한 크롤링 실행
-            subprocess.call(f"cd scraper && scrapy crawl indexhistory -a URL={url} --nolog", shell=True)
-            print("Crawling index {} done at {}".format(dex_id, datetime.now()))
+            subprocess.call(f"cd scraper && scrapy crawl indexhistory --nolog", shell=True)
+            print("Crawling each index done at {}".format(datetime.now()))
         except Exception as e:
             print(e)
             return Response({"detail": "Error scraping data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response({"detail": "Database updated."}, status=status.HTTP_200_OK)
-    
-    def put(self, request, dex_id):
-        # get SrcDex object
-        src_obj = SrcDex.objects.get(id=dex_id)
-        isInvest = src_obj.isInvest
-        period = src_obj.period
-
-        # get date-dataframe
-        df = get_date_information(datetime.today(), isInvest, period)
-
-        # add src data to df
-        src_dict = src_obj.values
-        df = merge_src_df(src_dict, df, isInvest)
-
-        # add compare data to df
-        if isInvest:
-            compare_list = SrcDex.objects.filter(isInvest=isInvest).exclude(id=dex_id).values_list('id', flat=True)
-        else:
-            compare_list = SrcDex.objects.filter(isInvest=isInvest, period=period).exclude(id=dex_id).values_list('id', flat=True)
-        for index in compare_list:
-            compare_dict = SrcDex.objects.get(id=index).values
-            df = merge_compare_df(index, compare_dict, df, isInvest)
-
-        # get correlation between src compare data
-        json_tags = get_tags_from_corr(df)
-
-        # save data
-        src_obj.tags = json_tags
-        try:
-            src_obj.save()
-            serializer = DexSerializer(src_obj)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except:
-            return Response({"detail": "Error saving data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserDexView(APIView):
     def get(self, request):
