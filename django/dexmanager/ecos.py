@@ -3,7 +3,7 @@ from .models import SrcDex
 from .utils import reduce_title
 
 def get_url_period(index_period):
-    period_dict = {"D": "/D/20230715/20230724/", "M": "/M/202207/202304/", "Q": "/Q/2021Q1/2023Q2/", "A": "/A/2014/2023/"}
+    period_dict = {"D": "/D/20230719/20230728/", "M": "/M/202209/202306/", "Q": "/Q/2021Q1/2023Q2/", "A": "/A/2014/2023/"}
     return period_dict[index_period]
 
 def truncate_string(original_string):
@@ -54,6 +54,7 @@ def get_statistic(index_period, table_code, index_code):
                 Dex.isInvest = False
                 Dex.search_keyword = [title]
                 Dex.reduced_title = reduce_title(saved_title)
+                Dex.period = index_period
             Dex.values = values
             Dex.save()
 

@@ -17,6 +17,7 @@ class SrcDex(models.Model):
 
     # for economic Dexes
     unit = models.CharField(max_length=256, null=True)
+    period = models.CharField(max_length=64, null=True)
 
     # for investing Dexes
     reduced_title = models.CharField(max_length=64, null=True)
