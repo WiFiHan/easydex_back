@@ -37,25 +37,20 @@ CORS_ALLOW_CREDENTIALS = True # cookie를 주고받으려면 얘를 True로 설�
 # Application definition
 
 INSTALLED_APPS = [
-    'scraper',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_apscheduler',
     'account',
     'dexmanager',
+    'scraper',
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
 ]
-
-APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"  # Default
-
-SCHEDULER_DEFAULT = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

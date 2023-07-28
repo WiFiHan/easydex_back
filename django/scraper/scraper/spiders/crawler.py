@@ -3,6 +3,7 @@ from ..items import SrcDexItem, HankyungTitleItem
 
 class IndicesInfoSpider(scrapy.Spider):
     name = "indicesinfo"
+    allowed_domains = ["investing.com"]
     start_urls = [
         "https://www.investing.com/indices/us-30", 
         "https://www.investing.com/indices/us-spx-500",
@@ -59,9 +60,38 @@ class IndicesInfoSpider(scrapy.Spider):
 
 class IndexHistorySpider(scrapy.Spider):
     name = "indexhistory"
-    
-    def start_requests(self):
-        yield scrapy.Request(f"{self.URL}-historical-data", self.parse)
+    allowed_domains = ["investing.com"]
+    start_urls = [
+        "https://www.investing.com/indices/us-30-historical-data", 
+        "https://www.investing.com/indices/us-spx-500-historical-data",
+        "https://www.investing.com/indices/nasdaq-composite-historical-data",
+        "https://www.investing.com/indices/volatility-s-p-500-historical-data",
+        "https://www.investing.com/indices/smallcap-2000-historical-data",
+        "https://www.investing.com/indices/kospi-historical-data",
+        "https://www.investing.com/indices/kosdaq-historical-data",
+        "https://www.investing.com/crypto/bitcoin/btc-usd-historical-data",
+        "https://www.investing.com/crypto/ethereum/eth-usd-historical-data",
+        "https://www.investing.com/currencies/usd-krw-historical-data",
+        "https://www.investing.com/currencies/jpy-krw-historical-data",
+        "https://www.investing.com/etfs/spdr-s-p-500-historical-data",
+        "https://www.investing.com/etfs/ultrapro-short-qqq-historical-data",
+        "https://www.investing.com/etfs/powershares-qqqq-historical-data",
+        "https://www.investing.com/etfs/ishares-russell-2000-index-etf-historical-data",
+        "https://www.investing.com/etfs/ishares-ftse-xinhua-china-25-historical-data",
+        "https://www.investing.com/commodities/gold-historical-data",
+        "https://www.investing.com/commodities/brent-oil-historical-data",
+        "https://www.investing.com/commodities/crude-oil-historical-data",
+        "https://www.investing.com/commodities/copper-historical-data",
+        "https://www.investing.com/commodities/us-corn-historical-data",
+        "https://www.investing.com/commodities/natural-gas-historical-data",
+        "https://www.investing.com/rates-bonds/u.s.-2-year-bond-yield-historical-data",
+        "https://www.investing.com/rates-bonds/u.s.-10-year-bond-yield-historical-data",
+        "https://www.investing.com/etfs/samsung-kodex-kospi-200-securities-historical-data",
+        "https://www.investing.com/etfs/samsung-kodex-200-total-return-historical-data",
+        "https://www.investing.com/etfs/samsung-kodex-leverage-historical-data",
+        "https://www.investing.com/etfs/miraeasset-tiger-kospi-200-historical-data",
+        "https://www.investing.com/etfs/305540-historical-data",
+    ]
 
     def parse(self, response):
         if ("crypto" in response.url) or ("currencies" in response.url):
