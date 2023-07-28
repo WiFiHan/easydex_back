@@ -51,22 +51,27 @@ class DexDetailView(APIView):
         return Response({"detail": "Database updated."}, status=status.HTTP_200_OK)
     
     def put(self, request, dex_id):
-        # get date-dataframe of 31 days
-        df = get_date_information(datetime.today())
-
         # get SrcDex object
         src_obj = SrcDex.objects.get(id=dex_id)
+        isInvest = src_obj.isInvest
+        period = src_obj.period
+
+        # get date-dataframe
+        df = get_date_information(datetime.today(), isInvest, period)
 
         # add src data to df
         src_dict = src_obj.values
-        df = merge_src_df(src_dict, df)
+        df = merge_src_df(src_dict, df, isInvest)
 
         # add compare data to df
-        compare_list = request.data['indices']
+        if isInvest:
+            compare_list = SrcDex.objects.filter(isInvest=isInvest).exclude(id=dex_id).values_list('id', flat=True)
+        else:
+            compare_list = SrcDex.objects.filter(isInvest=isInvest, period=period).exclude(id=dex_id).values_list('id', flat=True)
         for index in compare_list:
             compare_dict = SrcDex.objects.get(id=index).values
-            df = merge_compare_df(index, compare_dict, df)
-        
+            df = merge_compare_df(index, compare_dict, df, isInvest)
+
         # get correlation between src compare data
         json_tags = get_tags_from_corr(df)
 
