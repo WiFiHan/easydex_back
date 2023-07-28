@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 import pandas as pd
 from pandas import DataFrame
+import random
+from .models import SrcDex
 
 def get_date_information(today, isInvest, period):
   if isInvest:
@@ -58,18 +60,30 @@ def merge_compare_df(index : int, compare_dict : dict, df : DataFrame, isInvest:
 def get_tags_from_corr(df : DataFrame):
   df = df.apply(lambda x: pd.to_numeric(x.astype(str).str.replace(',',''), errors='coerce'))
   coefs = df.corrwith(df['src'], numeric_only=True)
-  filtered_coefs = coefs[abs(coefs) > 0.7]
-  if filtered_coefs.empty:
-      filtered_coefs = coefs[abs(coefs) > 0.5]
+  filtered_coefs = coefs[abs(coefs) > 0.5]
   sorted_coefs = filtered_coefs.abs().sort_values(ascending=False)
   ordered_indices = sorted_coefs.index.tolist()
   if 'src' in ordered_indices:
     ordered_indices.remove('src')
   if len(ordered_indices) > 5:
-      ordered_indices = ordered_indices[:5]
+    ordered_indices = ordered_indices[:5]
 
   json_tags = {}
   for idx in ordered_indices:
-      json_tags[idx] = round(coefs[idx], 3)
+    json_tags[idx] = round(coefs[idx], 3)
+
+  random_indicies = get_random_tags(ordered_indices)
+  for idx in random_indicies:
+    json_tags[str(idx)] = "random"
     
   return json_tags
+
+def get_random_tags(exclude_list):
+  start_idx = SrcDex.objects.first().id
+  end_idx = SrcDex.objects.last().id
+  random_indicies = []
+  while (len(random_indicies) < 8 - len(exclude_list)):
+    random_number = random.randint(start_idx, end_idx)
+    if random_number not in exclude_list:
+      random_indicies.append(random_number)
+  return random_indicies
