@@ -9,9 +9,8 @@
 3. [팀원 구성](#People)
 
 ### Project Overview & Views
-<img src="./images/homepage.png" width="32%">
-<img src="./images/signup.png" width="32%">
-<img src="./images/login.png" width="32%">
+<img src="./images/homepage.png"> | <img src="./images/signup.png"> | <img src="./images/login.png">
+--|--|--
 
 > 서버 및 크롤링 데이터 복구 진행 중입니다(24.04.02.)
 
